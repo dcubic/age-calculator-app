@@ -22,6 +22,7 @@ const invalidTimeDifferenceState = {
 };
 const onBlurTimeoutDuration = 100;
 const identifiers = ["day", "month", "year"];
+const timeDifferenceIdentifiers = ["years", "months", "days"];
 
 function App() {
   const [enteredValues, setEnteredValues] = useState({
@@ -215,80 +216,27 @@ function App() {
     }));
   }
 
-  // TODO consider refactoring each of these <div inputContainer> elements into a separate component
   return (
-    <div>
+    <div className={styles.appContainer}>
       <form className={styles.form} onSubmit={onSubmit}>
         <div className={styles.inputsContainer}>
           {identifiers.map((identifier) => (
             <Input
               identifier={identifier}
-              handleFocus={() => handleInputFocus("day")}
+              handleFocus={() => handleInputFocus(identifier)}
               handleBlur={() => {
                 setTimeout(() => {
-                  handleInputBlur("day");
+                  handleInputBlur(identifier);
                 }, onBlurTimeoutDuration);
               }}
               handleChange={(event) =>
-                handleInputChange("day", event.target.value)
+                handleInputChange(identifier, event.target.value)
               }
               value={enteredValues[identifier]}
               getErrorMessage={() => errorMessage(identifier)}
               shouldDisplayError={() => shouldDisplayError(identifier)}
             />
           ))}
-          {/* <div className={styles.inputContainer}>
-            <label htmlFor="day-input">Day</label>
-            <input
-              id="day-input"
-              placeholder="DD"
-              onFocus={() => handleInputFocus("day")}
-              onBlur={() => {
-                setTimeout(() => {
-                  handleInputBlur("day");
-                }, onBlurTimeoutDuration);
-              }}
-              onChange={(event) => handleInputChange("day", event.target.value)}
-              value={enteredValues.day}
-            ></input>
-            {errorMessage('day')}
-          </div>
-          <div className={styles.inputContainer}>
-            <label htmlFor="month-input">Month</label>
-            <input
-              id="month-input"
-              placeholder="MM"
-              onBlur={() => {
-                setTimeout(() => {
-                  handleInputBlur("month");
-                }, onBlurTimeoutDuration);
-              }}
-              onFocus={() => handleInputFocus("month")}
-              onChange={(event) =>
-                handleInputChange("month", event.target.value)
-              }
-              value={enteredValues.month}
-            ></input>
-            {errorMessage('month')}
-          </div>
-          <div className={styles.inputContainer}>
-            <label htmlFor="year-input">Year</label>
-            <input
-              id="year-input"
-              placeholder="YYYY"
-              onBlur={() => {
-                setTimeout(() => {
-                  handleInputBlur("year");
-                }, onBlurTimeoutDuration);
-              }}
-              onFocus={() => handleInputFocus("year")}
-              onChange={(event) =>
-                handleInputChange("year", event.target.value)
-              }
-              value={enteredValues.year}
-            ></input>
-            {errorMessage('year')}
-          </div> */}
         </div>
         <div className={styles.dividerButtonContainer}>
           <hr className={styles.lineBreak}></hr>
@@ -298,18 +246,12 @@ function App() {
         </div>
       </form>
       <div className={styles.outputsContainer}>
-        <div>
-          <div className={styles.outputValue}>{timeDifference.years}</div>
-          <div className={styles.units}>years</div>
-        </div>
-        <div>
-          <div className={styles.outputValue}>{timeDifference.months}</div>
-          <div className={styles.units}>months</div>
-        </div>
-        <div>
-          <div className={styles.outputValue}>{timeDifference.days}</div>
-          <div className={styles.units}>days</div>
-        </div>
+        {timeDifferenceIdentifiers.map((identifier) => (
+          <div>
+            <div className={styles.outputValue}>{timeDifference[identifier]}</div>
+            <div className={styles.units}>{identifier}</div>
+          </div>
+        ))}
       </div>
     </div>
   );

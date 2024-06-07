@@ -22,9 +22,12 @@ function Input({
   shouldDisplayError,
 }) {
   const id = `${identifier}-input`
+  console.log(shouldDisplayError());
+  const labelClasses = `${styles.label}${shouldDisplayError() ? ` ${styles.error}` : ''}`
+  const inputClasses = `${styles.input}${shouldDisplayError() ? ` ${styles.inputError}` : ''}`
   return (
     <div className={styles.inputContainer}>
-      <label htmlFor={id}>{identifier}</label>
+      <label htmlFor={id} className={labelClasses}>{identifier}</label>
       <input
         id={id}
         placeholder={getPlaceholder(identifier)}
@@ -32,6 +35,7 @@ function Input({
         onBlur={handleBlur}
         onChange={handleChange}
         value={value}
+        className={inputClasses}
       ></input>
       {getErrorMessage()}
     </div>

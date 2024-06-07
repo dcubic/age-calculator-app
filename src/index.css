@@ -1,0 +1,50 @@
+@font-face {
+    font-family: 'Poppins';
+    src: url('assets/fonts/Poppins-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins-Bold';
+    src: url('assets/fonts/Poppins-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins-ExtraBold';
+    src: url('assets/fonts/Poppins-ExtraBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins-Italic';
+    src: url('assets/fonts/Poppins-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* - Purple: hsl(259, 100%, 65%)
+
+### Neutral
+- Off black: hsl(0, 0%, 8%)
+
+### Body Copy
+
+- Font size (inputs): 32px */
+
+:root {
+    --off-white: hsl(0, 0%, 94%);
+    --light-gray: hsl(0, 0%, 86%);
+    --smokey-gray: hsl(0, 1%, 44%);
+    --error-red: hsl(0, 100%, 67%);
+    font-family: 'Poppins';
+}
+
+body, p, hr{
+    margin: 0;
+    background-color: var(--off-white);
+    line-height: 1rem;
+}

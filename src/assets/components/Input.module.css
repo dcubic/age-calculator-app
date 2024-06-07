@@ -1,0 +1,39 @@
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    font-size: 0.5rem;
+    font-family: 'Poppins-ExtraBold';
+    color: var(--smokey-gray);
+}
+
+.input {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.4rem 0;
+    padding-left: 0.5rem;
+    font-family: 'Poppins-Bold';
+    border-radius: 0.3rem;
+    border-style: solid;
+    border-color: var(--light-gray);
+}
+
+.inputContainer p {
+    font-size: 0.5rem;
+    background-color: white;
+    font-family: 'Poppins-Italic';
+    color: var(--error-red);
+}
+
+.error {
+    color: var(--error-red);
+}
+
+.inputError {
+    border-color: var(--error-red);
+}
