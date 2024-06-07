@@ -21,6 +21,12 @@
     border-radius: 0.3rem;
     border-style: solid;
     border-color: var(--light-gray);
+    caret-color: var(--purple);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--desaturated-purple);
 }
 
 .inputContainer p {

@@ -241,15 +241,15 @@ function App() {
         <div className={styles.dividerButtonContainer}>
           <hr className={styles.lineBreak}></hr>
           <button className={styles.submitButton}>
-            <IconArrow></IconArrow>
+            <IconArrow className={styles.iconArrow}></IconArrow>
           </button>
         </div>
       </form>
       <div className={styles.outputsContainer}>
         {timeDifferenceIdentifiers.map((identifier) => (
-          <div>
-            <div className={styles.outputValue}>{timeDifference[identifier]}</div>
-            <div className={styles.units}>{identifier}</div>
+          <div className={styles.outputContainer}>
+            <p className={styles.outputValue}>{timeDifference[identifier]}</p>
+            <p className={styles.units}>{identifier}</p>
           </div>
         ))}
       </div>

@@ -9,3 +9,53 @@
     flex-direction: row;
     gap: 1rem;
 }
+
+.dividerButtonContainer {
+    position: relative;
+}
+
+.lineBreak {
+    margin: 3rem 0;
+    border-color: var(--off-white);
+    opacity: 0.4;
+}
+
+.submitButton {
+    top: -1.43rem;
+    left: 40%;
+    position: absolute;
+    width: 3rem;
+    height: 3rem;
+    border: none;
+    background-color: var(--purple);
+    border-radius: 50%;
+}
+
+.iconArrow {
+    transform: translate(0.5px, 1px);
+}
+
+.outputsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.outputContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+}
+
+.outputContainer p {
+    font-size: 32px;
+    font-family: 'Poppins-ExtraBoldItalic';
+}
+
+.outputValue {
+    color: var(--purple);
+}
+
+.units {
+    color: var(--off-black);
+}
