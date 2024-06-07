@@ -1,6 +1,9 @@
 import styles from "./App.module.css";
 import { useState } from "react";
+import DatesYMD from "diff-ymd-package";
 import IconArrow from "./assets/images/icon-arrow.svg?react";
+
+import Input from "./assets/components/Input.jsx";
 
 const thirtyDayMonths = new Set([4, 6, 9, 11]);
 const postSubmissionState = {
@@ -12,6 +15,13 @@ const februaryRegularLength = 28;
 const februaryLeapYearLength = 29;
 const yearStringMinLength = 4;
 const monthDayStringLength = 2;
+const invalidTimeDifferenceState = {
+  days: "--",
+  months: "--",
+  years: "--",
+};
+const onBlurTimeoutDuration = 100;
+const identifiers = ["day", "month", "year"];
 
 function App() {
   const [enteredValues, setEnteredValues] = useState({
@@ -25,6 +35,10 @@ function App() {
     month: "clear",
     year: "clear",
   });
+
+  const [timeDifference, setTimeDifference] = useState(
+    invalidTimeDifferenceState
+  );
 
   function isInteger(inputString) {
     const regex = /^\d+$/;
@@ -47,102 +61,143 @@ function App() {
     }
   }
 
-  function isDateInFuture() {
-    const formattedYearString = enteredValues.year.padStart(yearStringMinLength, '0');
-    const formattedMonthString = enteredValues.month.padStart(monthDayStringLength, '0');
-    const formattedDayString = enteredValues.day.padStart(monthDayStringLength, '0');
+  function getComparisonDates() {
+    const formattedYearString = enteredValues.year.padStart(
+      yearStringMinLength,
+      "0"
+    );
+    const formattedMonthString = enteredValues.month.padStart(
+      monthDayStringLength,
+      "0"
+    );
+    const formattedDayString = enteredValues.day.padStart(
+      monthDayStringLength,
+      "0"
+    );
 
     const enteredDateString = `${formattedYearString}-${formattedMonthString}-${formattedDayString}`;
     const enteredDate = new Date(enteredDateString);
     const currentDate = new Date();
 
+    return { enteredDate, currentDate };
+  }
+
+  function isDateInFuture() {
+    const { enteredDate, currentDate } = getComparisonDates();
     return currentDate.getTime() < enteredDate.getTime();
   }
 
   function isInputValid(identifier) {
-    switch(identifier) {
-      case 'day': return isInteger(enteredValues.day) && 1 <= +enteredValues.day && +enteredValues.day <= 31;
-      case 'month': return isInteger(enteredValues.month) && 1 <= +enteredValues.month && +enteredValues.month <= 12;
-      case 'year': return isInteger(enteredValues.year) && +enteredValues.year >= 0;
-      default: return false;
+    switch (identifier) {
+      case "day":
+        return (
+          isInteger(enteredValues.day) &&
+          1 <= +enteredValues.day &&
+          +enteredValues.day <= 31
+        );
+      case "month":
+        return (
+          isInteger(enteredValues.month) &&
+          1 <= +enteredValues.month &&
+          +enteredValues.month <= 12
+        );
+      case "year":
+        return isInteger(enteredValues.year) && +enteredValues.year >= 0;
+      default:
+        return false;
     }
   }
-  const isDayValid =
-    isInteger(enteredValues.day) &&
-    1 <= +enteredValues.day &&
-    +enteredValues.day <= 31;
-  const isMonthValid =
-    isInteger(enteredValues.month) &&
-    1 <= +enteredValues.month &&
-    +enteredValues.month <= 12;
-  const isYearValid = isInteger(enteredValues.year) && +enteredValues.year >= 0;
 
   const areInputsValid = () => {
-    return isDayValid && isMonthValid && isYearValid
-  }
+    return identifiers.every((identifier) => isInputValid(identifier));
+  };
 
   function submittedEmptyValue(identifier) {
-    return modificationState[identifier] === 'submitted' && enteredValues[identifier] === ''
+    return (
+      modificationState[identifier] === "submitted" &&
+      enteredValues[identifier] === ""
+    );
   }
 
   function shouldDisplayInputError(identifier) {
-    return modificationState[identifier] !== 'clear' && !isInputValid(identifier);
+    return (
+      modificationState[identifier] !== "clear" && !isInputValid(identifier)
+    );
   }
 
-  const shouldDisplayError = (identifier) => {
+  function shouldDisplayError(identifier) {
     if (areInputsValid()) {
       return !isEnteredDateValid() || isDateInFuture();
     } else {
-      return submittedEmptyValue(identifier) || shouldDisplayInputError(identifier);
+      return (
+        submittedEmptyValue(identifier) || shouldDisplayInputError(identifier)
+      );
     }
   }
 
-  const dayErrorMessage = () => {
-    if (submittedEmptyValue('day')) {
-      return <p>This field is required</p>;
-    } else if (shouldDisplayInputError('day')) {
-      return <p>Must be a valid day</p>;
-    } else if (areInputsValid() && !isEnteredDateValid()) {
-      return <p>Must be a valid date</p>;
+  function errorMessage(identifier) {
+    if (identifier === "day") {
+      if (submittedEmptyValue(identifier)) {
+        return <p>This field is required</p>;
+      } else if (shouldDisplayInputError(identifier)) {
+        return <p>Must be a valid day</p>;
+      } else if (areInputsValid() && !isEnteredDateValid()) {
+        return <p>Must be a valid date</p>;
+      } else {
+        return <></>;
+      }
+    } else if (identifier === "month") {
+      if (submittedEmptyValue(identifier)) {
+        return <p>This field is required</p>;
+      } else if (shouldDisplayInputError(identifier)) {
+        return <p>Must be a valid month</p>;
+      } else {
+        return <></>;
+      }
+    } else if (identifier === "year") {
+      if (submittedEmptyValue(identifier)) {
+        return <p>This field is required</p>;
+      } else if (shouldDisplayInputError(identifier)) {
+        return <p>Must be a valid year</p>;
+      } else if (areInputsValid() && isEnteredDateValid() && isDateInFuture()) {
+        return <p>Must be in the past</p>;
+      } else {
+        return <></>;
+      }
     } else {
       return <></>;
     }
-  };
+  }
 
-  const monthErrorState = () => {
-    if (submittedEmptyValue('month')) {
-      return <p>This field is required</p>;
-    } else if (modificationState.month !== "clear" && !isMonthValid) {
-      return <p>Must be a valid month</p>;
-    } else {
-      return <></>;
-    }
-  };
+  function computeTimeDifference() {
+    const { currentDate, enteredDate } = getComparisonDates();
+    const formatter = DatesYMD.diffDates(enteredDate, currentDate);
+    const differenceArray = formatter.diffArray();
 
-  const yearErrorState = () => {
-    if (modificationState.year === 'submitted' && enteredValues.year === '') {
-      return <p>This field is required</p>;
-    } else if (modificationState.year !== "clear" && !isYearValid) {
-      return <p>Must be a valid year</p>;
-    } else if (areInputsValid() &&
-      isEnteredDateValid() &&
-      isDateInFuture()
-    ) {
-      return <p>Must be in the past</p>;
-    } else {
-      return <></>
-    }
+    return {
+      years: differenceArray[0],
+      months: differenceArray[1],
+      days: differenceArray[2],
+    };
   }
 
   function onSubmit(event) {
     event.preventDefault();
     setModificationState(postSubmissionState);
+    if (areInputsValid() && isEnteredDateValid() && !isDateInFuture()) {
+      setTimeDifference(computeTimeDifference());
+    } else {
+      setTimeDifference(invalidTimeDifferenceState);
+    }
   }
 
   function handleInputChange(identifier, newValue) {
+    const formattedNewValue = isInteger(newValue)
+      ? (+newValue).toString()
+      : newValue;
     setEnteredValues((previousValues) => ({
       ...previousValues,
-      [identifier]: newValue,
+      [identifier]: formattedNewValue,
     }));
   }
 
@@ -160,48 +215,80 @@ function App() {
     }));
   }
 
+  // TODO consider refactoring each of these <div inputContainer> elements into a separate component
   return (
     <div>
       <form className={styles.form} onSubmit={onSubmit}>
         <div className={styles.inputsContainer}>
-          <div className={styles.inputContainer}>
+          {identifiers.map((identifier) => (
+            <Input
+              identifier={identifier}
+              handleFocus={() => handleInputFocus("day")}
+              handleBlur={() => {
+                setTimeout(() => {
+                  handleInputBlur("day");
+                }, onBlurTimeoutDuration);
+              }}
+              handleChange={(event) =>
+                handleInputChange("day", event.target.value)
+              }
+              value={enteredValues[identifier]}
+              getErrorMessage={() => errorMessage(identifier)}
+              shouldDisplayError={() => shouldDisplayError(identifier)}
+            />
+          ))}
+          {/* <div className={styles.inputContainer}>
             <label htmlFor="day-input">Day</label>
             <input
               id="day-input"
               placeholder="DD"
               onFocus={() => handleInputFocus("day")}
-              onBlur={() => handleInputBlur("day")}
+              onBlur={() => {
+                setTimeout(() => {
+                  handleInputBlur("day");
+                }, onBlurTimeoutDuration);
+              }}
               onChange={(event) => handleInputChange("day", event.target.value)}
               value={enteredValues.day}
             ></input>
-            {dayErrorMessage()}
+            {errorMessage('day')}
           </div>
           <div className={styles.inputContainer}>
             <label htmlFor="month-input">Month</label>
             <input
               id="month-input"
               placeholder="MM"
-              onBlur={() => handleInputBlur("month")}
+              onBlur={() => {
+                setTimeout(() => {
+                  handleInputBlur("month");
+                }, onBlurTimeoutDuration);
+              }}
               onFocus={() => handleInputFocus("month")}
               onChange={(event) =>
                 handleInputChange("month", event.target.value)
               }
               value={enteredValues.month}
             ></input>
-            {monthErrorState()}
+            {errorMessage('month')}
           </div>
           <div className={styles.inputContainer}>
             <label htmlFor="year-input">Year</label>
             <input
               id="year-input"
               placeholder="YYYY"
-              onBlur={() => handleInputBlur("year")}
+              onBlur={() => {
+                setTimeout(() => {
+                  handleInputBlur("year");
+                }, onBlurTimeoutDuration);
+              }}
               onFocus={() => handleInputFocus("year")}
-              onChange={(event) => handleInputChange('year', event.target.value)}
+              onChange={(event) =>
+                handleInputChange("year", event.target.value)
+              }
               value={enteredValues.year}
             ></input>
-            {yearErrorState()}
-          </div>
+            {errorMessage('year')}
+          </div> */}
         </div>
         <div className={styles.dividerButtonContainer}>
           <hr className={styles.lineBreak}></hr>
@@ -212,15 +299,15 @@ function App() {
       </form>
       <div className={styles.outputsContainer}>
         <div>
-          <div className={styles.outputValue}>TODO: years output</div>
+          <div className={styles.outputValue}>{timeDifference.years}</div>
           <div className={styles.units}>years</div>
         </div>
         <div>
-          <div className={styles.outputValue}>TODO</div>
+          <div className={styles.outputValue}>{timeDifference.months}</div>
           <div className={styles.units}>months</div>
         </div>
         <div>
-          <div className={styles.outputValue}>TODO</div>
+          <div className={styles.outputValue}>{timeDifference.days}</div>
           <div className={styles.units}>days</div>
         </div>
       </div>
