@@ -218,7 +218,7 @@ function App() {
 
   return (
     <div className={styles.appContainer}>
-      <form className={styles.form} onSubmit={onSubmit}>
+      <form onSubmit={onSubmit}>
         <div className={styles.inputsContainer}>
           {identifiers.map((identifier) => (
             <Input

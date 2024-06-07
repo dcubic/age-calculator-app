@@ -13,6 +13,7 @@
 
 .input {
     width: 100%;
+    max-width: 7rem;
     box-sizing: border-box;
     margin: 0;
     padding: 0.4rem 0;
@@ -42,4 +43,20 @@
 
 .inputError {
     border-color: var(--error-red);
+}
+
+@media screen and (min-width: 400px) {
+    .label {
+        font-size: 0.6rem;
+    }
+
+    .inputContainer p {
+        font-size: 0.6rem;
+    }
+
+    .input {
+        padding: 0.6rem 0;
+        padding-left: 0.75rem;
+        font-size: 1rem;
+    }
 }

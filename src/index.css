@@ -50,5 +50,9 @@ body, p, hr{
 }
 
 body {
+    height: 100vh;
     background-color: var(--off-white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
